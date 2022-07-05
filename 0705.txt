@@ -1,0 +1,23 @@
+webapps
+
+servelt context Event
+이벤트가 나오면 함께 따라나오는게 있어요  listener 
+누군가가 이벤트가 발생하는지 안하는지 봐야한다 지켜보는게 listener
+servelt event 는 servelt listener를 통해서 이루어짐.
+대부분의 listener는 구현되도록 되어있다.
+listener는 자바에서 대부분 인터페이스.
+
+ServletContextListener
+톰캣이 올라오고 내려갈때 이벤트를 받는것.
+
+파일을 읽을때는 버퍼!
+
+텍스트를 읽을때는 한줄 단위로 읽어.
+버퍼가 내장되어있는 스트림있다.
+binary
+	InputStream
+Character
+	CharacterInputStream
+bufferInputStream
+	bufferedRead
+

@@ -39,7 +39,7 @@ public class InitializeDatabaseListener implements ServletContextListener {
     			dbInfo.put(fields[0], fields[1]);
     		}
     		
-    		context.setAttribute(record, record);
+    		
     		
 		} catch (IOException e) {
 			e.printStackTrace();
