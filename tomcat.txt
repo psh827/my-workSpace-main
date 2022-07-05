@@ -1,0 +1,42 @@
+maven project생성
+properties
+dynamic web module 3.1
+java 11
+
+apache tomcat8
+binary 64-bit window zip
+
+환경변수 설정
+
+cmd => startup
+
+tomcat 밑에 conf 들어가기 logging.properties 47번  EUC-KR 바꾸기
+
+server.xml 열기 69번라인 URIEncoding="UTF-8" 바꾸기.
+
+
+<maven.compiler.source>1.11</maven.compiler.source>
+<maven.compiler.target>1.11</maven.compiler.target>
+
+maven repository검색
+servlet api 검색 제일 처음 것 클릭 3.1.0누르고 dependencies 복사후 붙여넣기
+
+jsp 검색후 첫번재꺼 2.3.3 후 복사
+
+jstl 두번재꺼 1.2
+
+프로젝트 오른쪽 클릭 > maven > update project
+
+
+<?xml version="1.0" encoding="utf-8" ?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+		version="3.1">
+  <display-name>Archetype Created Web Application</display-name>
+</web-app>
+
+소스에 하기
+오류나면 markers열어서 빨간딱지 다 없애기
+
+index.jsp -> run as -> 확인해서 hello world 보기.

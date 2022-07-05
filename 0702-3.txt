@@ -1,0 +1,324 @@
+MVC 패턴
+	-. UI개발자와 비즈니스 개발자와의 분업 개발 제공
+	-. 동시 사용자 증가에 따른 시스템 확장성 제공.	
+	-. Low coupling, High cohesion을 통한 시스템 유지 보수의 편리성 제공
+	
+모델 2아키텍쳐
+	-. 썬 마이크로시스템의 베스트 가이드 라인
+	-. MVC패턴 구현을 위한 베스트 컴포넌트
+		Model 	: 	(P)Java, Java Beans, EJB (S) DAO, DTO
+		View 	:	   HTML, JSP, XML		(S) Servlet
+		Controller:	   Servlet				(S) JSP
+	
+
+컨트롤러의 주요 역할
+	서블릿에 의해 구현될 컨트롤러는 다음과 같은 역할을 처리한다.
+	-. 클라이언트의 요청 파라메터 정보를 구한다. //getParameter, getParameterNames <- retrun값은 invalition
+	-. 요청 파라메터에 대한 유효성 검증 및 데이터 변환 작업을 처리한다.
+	-. 요청 처리에 필요한 비즈니스 오퍼레이션을 호출한다.
+	-. 요청 처리 결과에 따라 클라이언트에게 보여줄 뷰를 선택한다. //dispatcher (forward, include)
+	
+서블릿 커뮤니케이션
+	-. 서블릿은 다른 서블릿과의 커뮤니케이션이 일반 객체와 달리 제약적이다.
+		-. 사용자가 서블릿 객체를 직접 생성하지 않는다.
+		-. 기본적으로 특정 서비스를 위해 하나의 서블릿 인스턴스를 생성한다.
+	-. 따라서 요청 처리를 다른 자원으로 위임할 수 있는 방법이 필요하다.
+	
+속성 Scope과 RequestDispathcer
+	-. RequestDispathcer인터페이스는 서블릿에서 다른 페이지로 포워드 할 수 있는 메소드를 제공.
+	-. 속성 scope은 다른 서블릿(JSP)과 공유해야 할 데이터를 임시적으로 저장할 수 있는 기능을 제공.
+	-. request, session, application, page
+	
+		setAttribute(String name, Object obj);
+		getAttribute(String name);
+		
+		-- 서블릿 --
+		request.setAttribute("userName", userName);
+		RequestDispathcer dispatcher = request.getRequestDispatcher("success.jsp");
+		dispatcher.forward(request, response);
+		
+		-----sendRedirect
+		request.setAttribute("userName", userName);
+		response.sendRedirect("success.sp"); //주소변화, requestScope 종료
+		
+		-- JSP --
+		String userName = request.getAttribute("userName");
+		
+	
+한명은 서블릿, 한명은 브라우저.
+브라우저를 통해서 서블릿으로 호출해/ㅆ어요 호출하고 실패하면 oo이한테 성공하면 xx한테보내요 성공하면 ww님 가입해주셔서감사합니다.
+ww님은 브라우저한테서들어오죠 들어왔어 가입자이름 받았어 가입관련되정보를 서비스한테 호출하고 서비스는Dao호출하고 Dao는 디비에 저장햇어 끝.
+성공페이지로 보내고 싶어 이페이지가 JSP야 아 누구눅님이 저기찍히잖아 name정보를 넘겨줘야겠지 넘겨주려면 객체만들어서 setUserName해야되잖아
+근데 JSP도 서블릿이지 못만든다고 그럼 서블릿은 zz한테 zz은 일종으 ㅣ 변수 집합소역활이야  서블릿은 zz는 map객체 username = '짱구'
+그래서 포워드해서 JSP로갓지 그러면 map에 접근해서 usernameㅇ을 찾고 뿌리는거야 그러면 저 데이터는 사라지는거야 문제는 Scope이 범위를 가리키거든
+언제사라지느냐가 관건이에요 저 4가지가 똑같이 map에다가 저장인데 언제사라지냐의 차이.
+request는 요청하고 처리다하고 보관하고 JSP로 응답이가죠 요청하고 응답이갓죠 이 사이클을 request사이클이라고 해요.
+응답이 딱 끝나고 나면 requestScope의 데이터는 스르르 사라져
+그런데 떄로는 이 request를 더 넓혀서 보관해야 할 때가있어요 언제냐면 네이버에 로그인을 햇어요 처리하고 페이지를 보내고 오른쪽에 보면 xx님 환영합니다 나오는거죠 예를들어
+그리고 메일로 들어갔어요 메일로 처리해서 보려고 봣는데 이쪽에서 받은 메일의 페이지가 보여지고 여전히 xx님환영합니다. 언제까지 로그아웃될때까지.
+이때 이정보가 여러번 요청되잖아 메일도보고, 카페도가고 언제까지잇느냐하면 로그아웃될때까지 이런걸 sessionScope이라고 해.
+
+또 호출했어 이번에는 여기다가 보관했어 이사람이 계속돌다가 로그인했어로그아웃했어 계속남아있너 다른사람이 들어와도 남아있어 언제까지? 어플리케이션 셧다운될때까지 이게 applicationScope
+한번 집어넣으면 셧다운될때까지 계속 있는거야 예를들어 교보문고에갔는데 첫페이지에 일다의 베스트셀러목록이 있다고 칩시다. 이 목록정보라는것이 사용자가 들어옹ㄹ때마다 변하지않아서
+누구나 보여준다. 그러면 올때마다 쿼리를 날려야되냐하면 그렇지않아요 한번날리고 캐시에 담는거에요 그러면 캐시에서 가져오면되는거에요 언제까지 있어야되냐면 내가 바꿀때까지 이런거는 어플리케이션
+
+page스코프는 오직 JSP페이지에서만 해당. 잘사용하지는않는다
+콜을했는데 JSP야 JSP가 다른 JSP로 포워드 할 수 있따. 포워드할때 벗어나면 사라져요. Java에서 this같은 너낌.
+
+request랑 session중 sessionScope이 더길다고 생각하지만 막 그렇지 않다.
+콜을 했는데 이걸 처리하기 위해서 최종적인 페이지가 xx다 그러면 서블릿거쳐서 응답이거든 콜을하고 서블릿이 응답을 처리하는 과정에서 누구부르고 누구부르고 꼐속 불러 불러 불러
+다 불러 마지막에 JSP가 나왔어. 이것도 하나의 request죠 근데 이시간이 굉장히 길고 반대로 session Time out있어요 이거는 굉장히 짧아 논리적으로는 가능하다는거고
+request보다 긴게 session이고 더 긴게 application
+request라는게 응답상황이거든. 
+
+그러면 어떻게 보관하느냐 
+	setAttribute(String name, Object obj);
+	
+페이지를 이동하는 또 다른 방법 sendRedirect
+어떤사람이 로그인하면 로그인페이지로 이동하죠 폼만나게되죠
+폼이 메인 인덱스일수있잖아요 네이버같이.
+이상황에서 로그인했어요 하고나면 보시면 통상적으로 forward하게되면 어떤상황이생기냐면 가만히 보면 
+만약에 a에서 b로갓어요 실적으로 화면에는 b가 보여요 이때 주소는 호출한자체가 a이기때문에 url은 a로 나옴.
+send는 똑같이해도 화면에 b로 보인다. b가가지고 있는 주소가 찍힘.
+
+
+
+------------------------------2022-07-04------------------------------------------
+
+<%@ page import="" session="" errorPage="" isErrorPage="" contentType="" pageEncoding="" %>
+
+자바빈즈(Java Beans)
+	빈규약을 따르고 재사용을하는 클래스?
+	Bean이란 재상용과 같은 어떤 목적을 가지고 지정된 규칙에 따라 만들어진 클래스 혹은 컴포넌트
+	규약
+		-. 빈은 인자가 없는 생성자를 가져야 한다.
+		-. 빈은 프로퍼티에 대한 네이밍 규칙을 준수해야 한다.
+		-. 설정(setter) 메소드의 아규먼트와 접근(getter) 메소드의 리턴타입은 도일해야 한다.
+			public void setName(String name);
+			public String getName();
+			public void setFemale(boolean female);
+			public boolean isFemail();
+		-. 빈의 연속성을 위해 Serializable 또는 Externalizable 인터페이스를 구현할 수 있다.
+		-. 캡슐화를 유지한다.
+		
+JSP 표준 액션
+	JSP는 다양한 표준 액션 태그를 제공한다.
+	빈 관련 JSP 표준 액션 태그 
+		-. 자바 빈즈를 JSP페이지에서 좀 더 쉽게 사용할 수 있도록 제공된 태그
+		-. <jsp:useBean>, <jsp:setProperty>, <jsp:getProperty>, 
+			<jsp:include>, <jsp:forward>, <jsp:param>
+			html처럼 <div> <html:div>이렇게 생략하지 않는이유는 html을 보존하기 위해. 
+		-. <jsp:useBean id="user"  //User user = new User()할 때 user 
+						class="com.varxyz.jv300.domain.User"
+						scope="request"/>
+			id: 빈속성명, 구분자
+			class: 해당 빈에 대한 완전한 클래스명 (추상클래스 X)
+			scope: [page(default) | request | session | application]
+			type: 빈 참조타입 (폴리모피즘 적용시 부모타입 명시)
+			
+			<jsp:useBean id="emp"
+						class="com.varxyz.jv300.domain.Manager"
+						scope="request"
+						type="com.varxyz.jv300.domain.Employee/>
+			
+			<jsp:setProperty name="user" property="userId"/>
+				name = "자바 빈이름(<jsp:useBean>의 id 속성과 동일명)"
+				property = "빈의 set프로퍼티명"
+			
+			case 1)
+				<jsp:useBean id="user"  //User user = new User()할 때 user 
+							class="com.varxyz.jv300.domain.User"
+							scope="request"/>
+				<jsp:setProperty name="user" property="userId"/>
+			
+			case 2) 신규로 생성될 때만 몸체 처리
+				<jsp:useBean id="user"  //User user = new User()할 때 user 
+							class="com.varxyz.jv300.domain.User"
+							scope="request">
+					<jsp:setProperty name="user" property="userId"/>
+				</jsp:useBean>
+				
+				
+			<% 
+				user.setUserId(request.getParameter("userId"));
+			%>	
+			
+			<jsp:setProperty name="user" property="userId" 
+				value="<%=request.getParameter("userId") %>"/>
+				
+			<jsp:setProperty name="user" property="userId" param="userId"/>
+			이 때 주의할 것은 param과 value의 경우 빈타입이 String 또는 Primitive타입.
+			
+			<jsp:setProperty name="user" property="*"/>
+			
+			<jsp:getProperty>태그 
+				빈이 가지고 있는 프로퍼티 값을 JSP페이지에 출력할 떄 사용
+				<jsp:getProperty name="user" property="userId"/>
+			
+			<jsp:include> 태그
+				현재 JSP페이지내에 지정된 페이지를 포함시킨다.
+				<jsp:include page="/incl/banner.jsp" /> // 8
+				cf) <%@ include file="..." %> // 3 + 5
+				
+			<jsp:include>				<%@ include>	
+			실행시점에 페이지에 포함				변환시점에 페이지에 포함
+			수정시 자동 업데이트제공				수정시 자동 업데이트가 안됨
+			정적컨텐츠, JSP, CGI포함가능		정적컨텐츠, JSP만 가능
+			표현식을 통해 page속성지정 가능		표현식을 통한 page소성 지정 불가능
+			매개변수 추가 가능
+				
+				
+			<jsp:param>
+			
+			-mypage1.jsp-
+			<jsp:include page="header.jsp">
+				<jsp:param name="subtitle" value="Welcome to varxyz"/>
+			</jsp:include>
+			
+			-header.jsp-
+			<img src="">%{param.subtitle}
+
+
+EL (Expression Language)
+	-. Since JSP2.0 스펙에서 EL추가
+	-. El은 크게 두가지 형태로 사용
+		-. 커스텀 태그나 액션 태그의 속성값으로 사용
+		-. JSP페이지내에서 텍스트 출력시 사용
+	-. Syntax : ${addr.city}, ${user.userId}
+	
+	JSP액션태그에서
+		<jsp:include page="/user/${user.id}/details.jsp"/> => /user/java/details.jsp
+	HTML 출력시
+		<h3>Welcome! ${user.userName} 님</h3> => <h3> Welcome 유비님 </h3>
+	커스텀 태그 속성값으로
+		<c:set var="name" value="${user.userName}" />
+		
+	${left.right}
+		left : EL 내장객체, 자바 빈, Map 중의 하나
+		right : 빈의 경우 프로퍼티, Map의 경우 key
+		
+		${user.userId} = ${user["userId"]}
+		${requestScope.user.userId} //requestScope은 EL내장객체 
+		//맵
+		${nationMap.kr} = ${nationMap["kr"]}
+		${header.host} = ${header["host"]}
+		//배열
+		${nations[0]} = ${nations["0"]}
+		//List 처리
+		=> Servlet
+			List<String> hobbies = new ArrayList<String>();
+			hobbies.add("travel");
+			hobbies.add("drive");
+			request.setAttribute("hobbies", hobbies);
+			
+			Map<String, String> teachers = new HashMap<String, String>();
+			teachers.put("java", "유비");
+			
+			request.setAttribute("teachers", teachers);
+			
+		
+		=> JSP 
+			Your first hobbie is ${hobbies[0]}
+			Your Java teacher is ${teachers["java"]}
+		
+EL 내장 객체
+	-. pageScope / requestScope / sessionScope / applicationScope
+	-. param ex) ${param.userName}
+	-. paramValues ex) ${paramValues.fruit[0]}
+	-. header / headerValues
+	-. cookie ex) ${cookie.userName.value} 
+					=> if(coockie[i].getName().equals("userName")){
+							out.println(cookie[i].getValue());
+						}
+	-. initParam
+	-. pageContext  ex) ${pageContext.request.method} = ${requestScope.method}
+	
+EL 연산
+	-. ${1 + 2 * 4} => 9
+	-. ${"1" + 10} => 11
+	-. ${null + 1} => 1
+	-. ${3 div 4} => 0.75
+	-. ${3 / 2} => 1.5
+	-. ${32 % 10} => 2
+	-. ==, eq
+	-. !=, ne
+	-. ${empty someVar}
+		someVar 빈 객체인지 여부를 검사.
+		true : null, "", 길이0
+		
+	-. null값에 대한 EL처리 방법
+		-. 속성/프로퍼티가 존재하지 않을 경우 에러 대신 그 부분에 어떤 내용도 출력하지 않는다.
+		-. 산술연산에서 null값은 0으로 처리한다.
+		-. 논리연산에서 null값은 false로 처리한다.
+						
+	-. EL2.2부터 객체의 메소드를 호출할 수 있따.
+		${x.doSomething()} => JSP 2.1이전 버전에서는 컴파일에러
+		
+		<%
+			Calculator calc= new Calculator();
+			request.setAttribute("calc", calc);
+		%>
+		
+		${calc.setAdd(1, 3)}
+		${calc.getAdD()}
+						
+JSTL과 커스텀 태그
+	JSTL은 표준 태그 라이브러리(Standard Tag Libary)로서 커스텀 태그 중에서
+	많이 사용하는 것들을 모아 JSTL 규약을 만들었다.
+	
+	JSTL을 사용함으로써 스크립트 코드를 사용할 때보다 간결하고 이해하기 쉬운
+	JSP코드를 작성할 수 있다.
+	
+	커스텀 태그는 사용자가 직접 개발한 사용자 정의 태그로서 특정 업무나 기능을
+	가진 태그를 개발자가 직접 커스터마이징 할 수 있다.
+	
+특징 
+	JSP에서 자바코드를 제거할 수 있다.
+	커스텀 태그는 재사용이 가능하다.
+	코드에 대한 가독성과 유지보수가 쉽다.
+	XML기반의 태그 형식
+	다양한 커스텀 태그 라이브러리 제공
+	
+JSTL 태그의 종류
+	코어라이브러리 : 변수지원, 흐름제어, URL처리 (접두어 : c)
+	XML라이브러리 : XML 제어, 변환 (접두어 : x)
+	국제화라이브러리: 지역, 메세지, 숫자, 날짜 형식 (접두어 : fmt)
+	데이터베이스 라이브러리 : SQL (접두어 : sql)
+	함수 라이브러리 : 컬렉션, String 처리 (접두어 : fn)
+	
+JSTL 코어 라이브러리	
+	set / if / forEach / url / out
+	
+set 태그
+	EL변수의 값이나 EL변수의 프로퍼티 값을 지정할 때 사용
+	 
+	<c:set var="pageTitle">회원가입</c:set>
+	
+	<html>
+		<head><title>${pageTitle}</title></head>
+		....
+	</html>
+if 태그
+	자바의 if블록과 유사한 기능을 제공한다.
+	<c:if test="조건식"> 조건이 참일 경우 실행코드 </c:if>
+	<c:if test="${not empty errorMsgs}">에러처리를 여기서 </c:if>
+	//${! empty someVar} 불가
+forEach 태그
+	배열, 컬렉션, 맵의 데이터를 순차적으로 처리할 때 사용한다.
+	<c:forEach var="message" items="${errorMsgs}">
+		<li>${message}</li>
+	</c:forEach>
+	<c:forEach var="num" begin="1" end="10">
+		${num} -> 1부터 10까지 값 출력.
+	</c:forEach>
+
+url 태그
+	컨텍스트 경로를 포함한 URL을 생성해 준다.
+	value 속성은 절대경로/상대경로 모두 가능
+	<form action='<c:url value="add_user.do"/>' method="post">
+	<form action='/add_user.do' method="post">
+	
+out 태그
+	데이터를 출력할 때 사용되는 태그로서 특수문자를 변경할 수 있는 기능을 제공한다.
+	<c:out value="${param.email}" default="no email provide" escapeXml="true" />
+	<c:out ...>출력내용</c:out>

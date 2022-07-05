@@ -1,0 +1,12 @@
+mysql환경변수 설정하기!
+cmd 오픈 후 mysql -u root -p 입력
+
+pom.xml 에 
+  <dependencies>
+  	<dependency>
+  		<groupId>mysql</groupId>
+  		<artifactId>mysql-connector-java</artifactId>
+  		<version>8.0.29</version>
+  	</dependency>
+  </dependencies> 
+추가 maven project에서 jdbc의 dirve추가 방법.

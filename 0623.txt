@@ -1,0 +1,223 @@
+20220623
+
+1교시
+실제 적용가능한 형태의 JDBC를 이용하는 클래스 만들어보자
+
+banking쪽에서 하려면 도메인을 가져ㅗ아야할거같은데
+도메이네 있는 데이터를 가져와야 컴파일에러가 안나겟ㅈ
+어카운트 체킹어카운트 커스터머 익셉션 세이비 어카운트 복사해서 집어넣자
+
+customer에접근하는 customerdao를 만들겟습니다.
+이제부터는 해야될건 새로 만드는게 아니고 새로 재사용가능한 형태로 리펙토링을 해볼거에요
+
+데이터 베이스와 접속정보죠
+이 접속정보가 바뀔까요? 거의 안바뀌겟죠 이게 로칼 변수로 정의되어있죠.
+이런것들은 뭘로 보면 좋을까요?
+
+String driver = "com.mysql.cj.jdbc.Driver";
+String url = "jdbc:mysql://localhost:3306/jv250?serverTimezone=Asia/Seoul";
+String id = "jv250";
+String passwd = "jv250";
+이걸 밑에 것으로 변경
+private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+private static final String JDBC_URL = "jdbc:mysql://localhost:3306/jv250?serverTimezone=Asia/Seoul";
+private static final String JDBC_USER = "jv250";
+private static final String JDBC_PASSOWRD = "jv250";
+
+실제 드라이버 로딩하는 과정과 데이터베이스 처리과정 두개가 나누어져있는데
+반드시 연결되어있을 필요는 없다 일단을 이렇게 해봅시다
+
+public CustomerDao() {
+	try {
+		Class.forName(JDBC_DRIVER);
+		System.out.println("LOADED DRIVER ---> " + JDBC_DRIVER);			
+	} catch (ClassNotFoundException e) {
+		e.printStackTrace();
+	}
+}
+
+그다음에 내용을 보면 테스트로 selectCustomer 전체 커스토머 가져오는 것
+이것도 할 수 있겠죠 전체 커스터모 정보를 가져와야되는데 몇건인지 알수없는데 커스터모정보니깐 Customer list로 가져올거에요
+public List<Customer> findAllCustomers(){
+		String sql = "SELECT * FROM Account";
+}
+
+쿼리는 이거 쓰면 되겟네요
+String sql = "SELECT * FROM Account";
+
+그러면 try catch해서 가져와야죠
+return이 list면 list로 만들어 줘야겟죠
+customer정보 뭘 가져오느냐 이게 중요한 건데
+customer정보 중에서 뭘 가져올까요 cid는 필요할까요?
+Customer에 cid를 만들고 getter setter를 만들고
+
+이렇게 담았으면 하나의 레코드에 대한거죠
+리스트에 담아야죠
+
+	public List<Customer> findAllCustomers(){
+		String sql = "SELECT * FROM Account";
+		List<Customer> customerList = new ArrayList();
+		
+		try {
+			Connection con = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			try {
+				con = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSOWRD);
+				pstmt = con.prepareStatement(sql);
+				rs = pstmt.executeQuery();
+				while(rs.next()) {
+					Customer c = new Customer();
+					c.setCid(rs.getLong("cid"));
+					c.setName(rs.getString("name"));
+					c.setSsn(rs.getString("ssn"));
+					c.setPhone(rs.getString("phone"));
+					c.setCustomerId(rs.getString("customerId"));
+					customerList.add(c);
+				}
+			} finally {
+				rs.close();
+				pstmt.close();
+				con.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return customerList;
+	}
+	
+지금 c가 null 인데 밑에서 객체가 만들어지고 있쬬
+만약에 객체가 만들어지지 않으면 null로 return되겟죠 이것을 null로 return할지 예외로 던질지는 여러분들의 선택이에요.
+
+	public Customer findCustomerBySsn(String ssn) {
+		String sql = "SELECT * FROM Customer WHERE ssn = ?";
+		Customer c = null;
+		try {
+			Connection con = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			try {
+				con = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSOWRD);
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, ssn);
+				rs = pstmt.executeQuery();
+				while(rs.next()) {
+					c = new Customer();
+					c.setCid(rs.getLong("cid"));
+					c.setName(rs.getString("name"));
+					c.setSsn(rs.getString("ssn"));
+					c.setPhone(rs.getString("phone"));
+					c.setCustomerId(rs.getString("customerId"));
+				}
+				
+			} finally {
+				rs.close();
+				pstmt.close();
+				con.close();
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return c;
+	}
+	
+2교시 10 : 02 시작
+99년도? 내가 혼자 자바 공부하고 데이터베이스 jdbc기술이 그때는 고급기술 자바에서 디비를 처리하는것이 초창기니깐
+저거ㅓ 이거를 혼자서 책보고하는데 책보고 예제를 보고 짜도 안돌아가요 책에서 말했던 환경세팅부터 시작해서 모든것들이
+해도 에러나고 이래서 요즘같으면 ㄱ카페게시판에다가 글을 올렷거든요 그ㄸ ㅐ제가 직장을 자빚ㅎ못하고 준비하느 ㄴ단계에서
+저한테 자바로 데이터베이스가르쳐주실분 사롁하겟습니ㅏㄷ. 며칠쯤 지나니깐 댓글로 자바로 디비하신다구요? 제가 도와줄수 이씅ㄹ거같은데
+카페 몇시에 만나기로해서 갓죠 두명이 나왓습니다 현업개발자 저랑 나이가 비슷한거같아 경력하고 물어보니간 한명은 3년차 한사람은 4년차
+아 내가 이거때문에 에러도나고 수정도아뇓고 도와줘 하면서 코드를 좀 보재요 노트북 ㅡㅇ로 보여줫더니 못고쳐 ㅋㅋ 에러가 어디난지 모르겟대
+대화가 끝난고난뒤에 왜 이렇게 공부하시냐 어떻게하냐 그냥 회사들어오세요 아 제가 스스로가 준비가 안됐다 지금 드가봤자 피해만 줄거같다
+아 그런게 어딧습니까 같이 하는거죠 준비는 철저성 이런게 잇어서 그런지 몰라도 전직장의 교육때문인지 모르지만 지금 드갈 수 없고
+저를 취업되면 월급을 안받고 일을 하겟다. 그런마음으로 내가 한번 해보겟다 헤어졋어
+결국에는 그문제가 해결이 안돼서 이런 교육기관 알아봣더니 이거를 가르치는곳이 없어요 자바는 많은데 jdbc는 없어.
+첨으로 sun마이크로스탠즈를 알게되고 코스가 5일짜리 있었고 80만원 수업에 참여를 했죠 5일을 배우고 나니깐 최소한 지금 하고있는정도는
+이해가되는데 당시에는 왜 그렇게 안됐을까 5일 끝날때 수료증이 발급이되요 부가세, 증서 회사에 줘야하니깐 제게 없는거죠 행정사항 착오인가?
+저는 개안적으로 들어왓습니다 회사가아니라 저한테는 해당사항이 안될거같아요 개인으로 오셧다구요? 강의때 첨본다 돈이 중요한게 아니고
+빨리 뭔가 알아가지고 나름대로 job을 옮긴 상황이기때문에 햇다. 
+어제오후에서 내가 무슨이야기를 하고싶엇냐면 어제 오후부터 sql나가고 java햇잖아요 한게 지금부터 20년 더된거같은데 그해 어떤 젊은이가
+혼자서 끙끙거리면서 카페연락하고 햇던 간절햇던거 여러분들은 치는거 보고 손들면 가서 에러잡아주고하는거잖아요 이게 좀 어렵다는것이 
+말도안되는거죠 감정적으로! 감성적으로. 누군가는 이거를 자기 돈 내고 가서 들었던 거에요 내가 좀 하다가 좀 어려우면 우리는 아직
+시작도 안한거거든요 방법이뭐가잇냐면 지난번에 햇던거 같긴한데 공부에서 효율성을 따지면 안되요. 그냥 시체말로 무식하게 공부하는거다
+만약에 이해안되면 다시 텍스트하나 만들어서 외우다 시피 한번 쳐보세요 이해 나중에 하면 되지. 그렇게 하는거에요. 근데 사실 우리가
+과거에는 그렇게 공부햇거든요 어린아이들이 태어나서 5~6살돼서 글을 배ㅜㅇㄹ때 천자문을 배우잖아요 예쩐에 하늘천 따지 누를황 이렇게하죠
+그거 애드리 이해하고 배웠을까요 천지현황이라는 이말은 문법적으로 틀린말이에요 하늘은 검거 땅은 누렇다 천현 지황 문법적으로 안맞는거 그냥 외우는거죠
+시간이 지난다음에 문법적으로 틀리더라도 이해도되고 글자 네게 외우는데 잇어서 하늘이 왜 검은지 땅이 왜 노란지 언제 이해하고 외우냐
+그냥하는거지.
+어느순간에 18세기 근대철학에서 합리성이 대두되어지고 교육이든 일이든 합리적 효율성을 찾기 시작함
+그것이 이미 지금은 straiht타입이 되어서 누구나 해야된다고 생각함. 인간이 가지고있는 모습은 다양함.
+빠른길만 찾으려고한다. 특히 한국사람. 없음. 우리가 빠르게 성장햇고 빠르게 선진국이 되엇고 그렇지만 외국사람이 봣을때 우리나라사람들은 좋게말하면
+끈ㅎ임없이 일하는 민족 시도때도없ㅇ이 근데 여유가 업슨거다. 유렵가면 출근시간에 뛰는사람없다. 
+서부중나왓는데 북부정류장 뒤엇는데 지대가 높아요 높다가 푹 꺼지고 다시 올라오는데 우리가 길을 건너가야되는데 비가 와서 물이 잠겻어요 지대가
+어떻게 하냐면 보트같은거 들고 와서 길건너갓어요 그거타고 길건너주는거에요 거기다가 사람 실어서 건너면 갈 사람을 태워주는거죠 우리는 당연한거죠
+서울에서 눈이 너무 많이 왓는데 저는 it하면서 자유로운복장이지만 첫직장은 컨설팅회사여서 슈트 양복 눈이 너무많이와서 약수동 신라호텔 뒤편에 지대가 높아요
+눈이오면 미끄럽잖아요 질퍽질퍽 구두 질퍽질퍽해서 꼴이사납지만 출근해야된다 
+합리성 효율성이 다 좋은건 아니다.
+2주살면서 성과낸적이 있는가 
+여기서뭔가 성과를 찾으려고 하면 안된다.
+당연히 모르는거고 당연히 어려운거다.
+자꾸보고 모르는거 체크해두고 노트정리하고 모르는걸 적는다 질문할걸 적는다.그거를 쌓아둿다가 동료한테묻거나 선생님한테 묻거나
+팀원이면 팀안에서 해결.뭐든지. 
+자 앞에서 select에대한 이야기를 햇다 바뀐건없다 뭐가 바꼇냐면 데이터를 주고받을때 적적히 디자인된 클래스들을 이용한다. OOP적으로 생각하고 해결해야됨.
+SELECT이후에 기본으로 해야되는것이고 두번째가 추가하는것 add를 해봐야겟죠 add를 하면 add라는 메소드는 뭐라치고 메소드의 인자는? Customer 객체가
+return은 뭘로 줘야할까? 던진 질문이 답이 잘 안나오게 던지니깐...
+return값이 줄게 있나요? 이렇게 하면 어떨까요 add 성공하면 true 아니면 false 받는입장에서는 알수있다. void는 알 수 없다.
+누군가 불러서 처리되는데 이 caller는 어떻게 알까 void면 JDBC입장에서는 삽입 코드 짜면 그만.
+이 return이 boolean일수도 잇고 지금 현재 입력한 entity 즉 Customer 그 자체를 return할 수 있다.
+뭐를 선택할거냐면 설계이슈고 해당 설계자가 정의내리는 것. 지금 질문을 스스로 던지지 않는다면 아무렇게나 하겟죠
+이것에 대해서 void가 되든 뭐가되든 그것에 대한 충분한 근거를 마련한뒤에 하면 그다음 step이 생기는거. 근거가 있기 때문에 이게 OOP적인 생각.
+여기서강의할때하고 다른데 기업에서 강의할때 어려움은 전문가들이어서 던지는 질문들이 자바뿐만아니라 자기 업무환경에 비추어 던짐.
+거기에 대해 답변을 다 할 순없지만 90프로는 한다. 이거 버벅거리면 통제 x. 초보 강사분들이 힘들얼함. 가장강한거로 약한것을 쳐야된다.
+프라이들도 강하고
+여기같은 경우에는 대부분 초보들. 대부분 취업과 연계과정 개인차이일수잇겟지만 걱정이되는거지 이게 첫번째
+두번째는 강의 외적. 시험, 평가, 이거해라 저거해라, 팀, 이런게 많다.
+상황이 다르더라도 결국에는 문제 해결해야될 문제
+현재 갖고있는 능력가지고 해결. 그게 공부.
+
+
+우리의 경우는 void로 리턴을 때릴것이다 왜? 의도가 뭐냐 여러분들이 주목해야될 것이 add를 어떻게 해야되냐가 첫번째 과제 그이외의 복잡성은 추후에 하겠다.
+그래서 void. 
+
+3교시 11:16
+앞에랑 비교하면 앞에는 그냥 값을 넣었고 지금은 customer의 값에따라서 달라진다.
+
+
+CustomerDao dao = new CustomerDao(); inner join 검증력도 좋게 빠르고 가장 많이 사용함.
+
+SELECT * FROM Account a INNER JOIN Customer c ON a.customerId = c.cid; //오리지날 정석.
+
+SELECT * FROM Account a INNER JOIN Customer c ON a.customerId = c.cid
+WHERE c.ssn = '961025-1234567';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

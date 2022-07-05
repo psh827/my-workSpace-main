@@ -1,0 +1,128 @@
+corretto
+
+c드라이브 밑에 java폴더 생성 후 버전 관리.
+
+환경변수 설정 
+system변수
+JAVA_HOME : java가 깔린위치
+PATH : %JAVA_HOME%\bin
+
+
+eclipse 다운. 
+maven.apache.org > download > binary.zip 다운.
+maven 환경 변수 설정
+MAVEN_HOME 변수 설정
+path: %MAVEN_HOME%\bin
+eclipse폴더 안 eclipse.ini 열어 -vmargs 밑에 -Dfile.encoding=UTF-8 코드 추가
+
+
+
+
+jvm 으로 컴파일 한다 그리고 다시 기계로 interpreter한다.
+컴파일을하면 속도가 빠름.
+
+
+JDK(Java Develope Kit) = 개발자용
+JRE(Java Runtime Environment) = 클라이언트용 JDK안에 포함되어있음.
+
+사람의 코드에서 virtual machine이 이해 할 수 있게 바꾸는 과정을 compile이라고 함.
+그 파일을 OS가 이해 하도록 변형하는게 interpreter
+
+compile interpreter 경로.
+test.java ...compile... > test.class(바이트코드라고 함) <- 하드디스크에서 이루어짐
+test.class <- java라는 명령어가 주어짐. > 메모리로 가져옴.
+class loader > bytecodeverifier > interpreter > runtime > hardware
+
+
+java의 기본 단위는 class 한줄의 코드를 적더라도 class를 만들어서 써야함.
+각각 저장 하는데 대소문자 구분해서 class이름 그래도 저장.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

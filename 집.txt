@@ -1,0 +1,61 @@
+Exception
+
+- checked Exception // 컴파일시 확인함. 예외처리가 되어있지 않으면 에러가 뜸.
+
+	try {
+		x.doSomething();
+	}catch(AException e){
+		System.out.println(e.getMessage());
+	}
+
+
+- unchecked Exception // Runtime Exception.
+
+
+-------------------------------------------------------------------------------
+
+public static int parseInt(String str) throws NumberFormatException; // parseInt의 구문.
+	
+	int num = Integer.parseInt("25); //Runtime Exception이므로 try/catch를 해도 되고 안해도 된다. 개발자 맘.ㅋㄷ
+	
+	
+public PreparedStatement prepareStatement() throws SQLException
+	PreparedStatement pstmt = com.prepareStatement();
+	
+
+-------------------------------------------------------------------------------
+
+소수.
+어떤 수를 던지면 이 수가 소수인지 아닌지 판단후 아니라면 예외.
+ex) 4 = 2 X 2;
+
+10 = 2*5;
+
+1. 마이너스 숫자에 대한 예외.
+2. PrimeNum이 아니라면 그 수까지의 소수의 갯수.
+3. 출력은 모두 소수 혹은 소수의 제곱근으로 표시.
+
+-------------------------------------------------------------------------------
+
+Customer
+	이름(name)
+	주민번호(ssn)
+	연락처(phone)
+	고객id(customerId)
+	비밀번호(passwd)
+	보유계좌(List<Account> 혹은 Collection<Account>)
+	
+CustomerService : Customer에 대한 서비스를 처리하는 클래스
+	1. 주요 메소드
+		-.addCustomer() : 신규 고객추가
+		-.getCustomerByssn : 주민번호로 고객 조회
+		-.getAllCustomers() : 전체 고객 목록
+		-.getNumOfCustomers() : 전체 고객 수가
+	2. 기타
+		-. CustomerService는 고객의 정보를 보관할 수 있는 속성을 유지해야 한다.
+		-. 고객의 정보를 유지할 수 있는 속성을 정의하라.
+		
+		
+		
+		
+		
