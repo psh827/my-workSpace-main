@@ -72,5 +72,16 @@ SELECT * FROM Account a INNER JOIN Customer c ON a.customerId = c.cid;
 SELECT * FROM Account a INNER JOIN Customer c ON a.customerId = c.cid
 WHERE c.ssn = '961025-1234567';
 
+CREATE TABLE Users(
+	uid		BIGINT		PRIMARY KEY AUTO_INCREMENT,
+	userId		VARCHAR(20)		NOT NULL,
+	passwd		VARCHAR(20) 	NOT NULL,
+	userName	VARCHAR(20) 	NOT NULL,
+	ssn			VARCHAR(14)		NOT NULL,
+	email		VARCHAR(30)		NOT NULL,
+	addr 		VARCHAR(60) 	NOT NULL
+)
 
+SELECT * FROM Users;
 
+ALTER TABLE `Users` ADD `regDate` TIMESTAMP	NOT NULL 	DEFAULT CURRENT_TIMESTAMP;

@@ -22,9 +22,10 @@
 	   		</jsp:include>
 	   </div>
 	   <div class="menu">
-	   <jsp:include page="/incl/menu.jsp">
-	   	</jsp:include>
-	   </div>
+		   <jsp:include page="/incl/menu.jsp">
+		   		<jsp:param name="go" value='<%=URLEncoder.encode("유저정보보기") %>' /> 
+		   	</jsp:include>
+	   	</div>
       <div class="logo">
         <h1><a href=""></a></h1>
       </div>
@@ -67,42 +68,9 @@
           <tr>
             <td>
               <h3>
-                <label class="year" for="year">생년월일</label>
+                <label class="year" for="ssn">생년월일</label>
               </h3>
-              <div class="input-group">
-                <input class="date" type="text" id="year" name="year" maxlength="4" placeholder="년(4자)" size="10">
-                <select id="month" class="date" name="month">
-                  <div class="month">
-                    <option value="월">월</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                  </div>
-                </select>
-                <input class="date" type="text" id="date" name="date" maxlength="2" size="10" placeholder="일">
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3>
-                <label class="gender" for="gender">성별</label>
-              </h3>
-              <select id="gender" name="gender">
-                <option value="sex">성별</option>
-                <option value="male">남자</option>
-                <option value="female">여자</option>
-                <option value="none">선택안함</option>
-              </select>
+                <input class="date" type="text" id="ssn" name="ssn" maxlength="8" placeholder="년(4자)" size="10">
             </td>
           </tr>
           <tr>
@@ -110,7 +78,7 @@
               <h3>
                 <label for="email">이메일<span id="select-opt-text">(선택)</span></label>
               </h3>
-              <input class="email" type="text" id="pre-email" name="pre-email"> @ <input class="email" type="text" id="back-email" name="back-email" value="">
+              <input class="email" type="text" id="pre-email" name="email1"> @ <input class="email" type="text" id="back-email" name="email2" value="">
               <select class="select-email" name="select-email">
                 <option value="">선택하기</option>
                 <option value="naver.com">naver.com</option>
@@ -122,26 +90,9 @@
           <tr>
             <td>
               <h3 id="ph-label">
-                <label for="">휴대전화</label>
+                <label for="addr">주소</label>
               </h3>
-              <ul>
-                <li>
-                  <select id="local-number" name="local-number">
-                    <option value="그레나다 +1 473">그레나다 +1 473</option>
-                    <option value="그리스 +30">그리스 +30</option>
-                    <option value="기니 +224">기니 +224</option>
-                    <option value="기니비사우 +245">기니비사우 +245</option>
-                    <option value="대한민국 +82" selected>대한민국 +82</option>
-                  </select>
-                </li>
-                <li>
-                  <input class="phone" type="tel" id="phone" name="phone" maxlength="11" pattern="[0-9]{11}" placeholder="전화번호 입력" required>
-                  <button type="button">인증번호 받기</button>
-                </li>
-                <li>
-                  <input class="certify" type="text" id="auth-num" name="auth-num" maxlength="4" placeholder="인증번호 입력하세요" disabled>
-                </li>
-              </ul>
+              <input class="addr" type="text" id="addr" name="addr1"> <br>상세주소 <input class="addr" type="text" id="addr2" name="addr2" value="">
             </td>
           </tr>
           <tr>
