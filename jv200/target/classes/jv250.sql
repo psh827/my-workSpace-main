@@ -85,3 +85,4 @@ CREATE TABLE Users(
 SELECT * FROM Users;
 
 ALTER TABLE `Users` ADD `regDate` TIMESTAMP	NOT NULL 	DEFAULT CURRENT_TIMESTAMP;
+SELECT * FROM Users WHERE userId = 'dhdp564' and passwd ='qwe'; 

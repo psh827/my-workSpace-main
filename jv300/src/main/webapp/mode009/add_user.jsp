@@ -22,9 +22,7 @@
 	   		</jsp:include>
 	   </div>
 	   <div class="menu">
-		   <jsp:include page="/incl/menu.jsp">
-		   		<jsp:param name="go" value='<%=URLEncoder.encode("유저정보보기") %>' /> 
-		   	</jsp:include>
+		   <jsp:include page="/incl/menu.jsp" /> 
 	   	</div>
       <div class="logo">
         <h1><a href=""></a></h1>

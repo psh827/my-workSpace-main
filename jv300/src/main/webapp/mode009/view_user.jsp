@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="EUC-KR"%>
 <%@ page import="java.net.URLEncoder" %>
 <!DOCTYPE html>
@@ -22,6 +22,7 @@
 	   	<form action="view_user.do" method="post">
 	   		<p>아이디를 입력하세용</p>
 	   		<input type="text" name="userId" required/>
+	   		<button type="submit">go!</button>
 	   	</form>
 	   	<%@ include file="/incl/footer.jsp" %>
 </div>
